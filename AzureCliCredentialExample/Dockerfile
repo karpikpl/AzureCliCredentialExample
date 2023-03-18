@@ -18,7 +18,16 @@ RUN dotnet build "AzureCliCredentialExample.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "AzureCliCredentialExample.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
+FROM debugging AS final-debugging
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "AzureCliCredentialExample.dll"]
+
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "AzureCliCredentialExample.dll"]
+
+# docker build --target final-debugging -t azurecred -f AzureCliCredentialExample/Dockerfile .
+# docker run -it --rm --env blobContainerUri=https://cs7100320023c885b32.blob.core.windows.net/testing --env AZURE_TENANT_ID=8ace3cb7-5c52-4b89-ba78-31a116187fb6 --name azurecred azurecred
+# docker exec -it azurecred bash -c "if az account show > /dev/null 2>&1; then echo 'already logged in'; else az login; fi"
