@@ -1,5 +1,8 @@
 # AzureCliCredentialExample
+
 An example for using an [`AzureCliCredential`](https://learn.microsoft.com/en-us/dotnet/api/azure.identity.azureclicredential?view=azure-dotnet) to connect to Azure from a container.
+
+Forked from [https://github.com/NCarlsonMSFT/AzureCliCredentialExample](https://github.com/NCarlsonMSFT/AzureCliCredentialExample). Sample updated to support VS Code and WSL.
 
 ## Dependencies
 - A Blob container where you have been assigned the "Storage Blob Data Reader" role.
@@ -7,23 +10,17 @@ An example for using an [`AzureCliCredential`](https://learn.microsoft.com/en-us
 ## Getting started
 Run
 ```
-dotnet user-secrets set "blobContainerUri" "https://<StorageAccount>.blob.core.windows.net/<ContainerName>" --id dotnet-AzureCliCredentialExample-eb931c0b-bc8a-40a0-a3ca-bcacdd9c54fb
+./runMe.sh https://<StorageAccount>.blob.core.windows.net/<ContainerName>
 ```
 to configure the blob container to enumerate.
 
-Open [AzureCliCredentialExample.sln](AzureCliCredentialExample.sln)
-
-Once the container has started, run:
-```
-.\Login-Containers.ps1
-```
-
 ## Highlights
-### [Login-Containers.ps1](Login-Containers.ps1)
-Enumerates containers with the label hasazcli and runs `az login` as needed.
+
+### [runMe.sh](runMe.sh)
+
+Script that builds the container in debug mode, logs in user using `az login` and creates another image with credentials built-in to run the code.
+
 ### debugging stage in [AzureCliCredentialExample\Dockerfile](AzureCliCredentialExample/Dockerfile)
+
 This stage adds the Azure CLI on top of the base image, but only for this stage.
-### [`DockerfileFastModeStage`](https://learn.microsoft.com/en-us/visualstudio/containers/container-msbuild-properties) property in [AzureCliCredentialExample\AzureCliCredentialExample.csproj](EnvironmentCredentialExample/EnvironmentCredentialExample.csproj)
-Configures the Docker launch profile to use the stage `debugging` when running in fast mode so we can use the Azure CLI
-### [docker-compose.vs.debug.yml](docker-compose.vs.debug.yml)
-Configures the docker-compose project to use the stage `debugging` when running in fast mode so we can use the Azure CLI
+For debugging `final-debugging` layer is used. When in production (non-debugging) - `final` layer is used that doesn't have Azure CLI.

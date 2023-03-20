@@ -16,7 +16,7 @@ namespace AzureCliCredentialExample
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while (!stoppingToken.IsCancellationRequested)
+            // while (!stoppingToken.IsCancellationRequested) // while is not needed when we create another layer of docker image with user credentials
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 try
