@@ -4,13 +4,10 @@ An example for using an [`AzureCliCredential`](https://learn.microsoft.com/en-us
 
 Forked from [https://github.com/NCarlsonMSFT/AzureCliCredentialExample](https://github.com/NCarlsonMSFT/AzureCliCredentialExample). Sample updated to support VS Code and WSL.
 
-## Dependencies
-- A Blob container where you have been assigned the "Storage Blob Data Reader" role.
-
 ## Getting started
 Run
 ```
-./runMe.sh https://<StorageAccount>.blob.core.windows.net/<ContainerName>
+./runMe.sh
 ```
 to configure the blob container to enumerate.
 

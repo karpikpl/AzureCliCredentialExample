@@ -1,5 +1,5 @@
 using Azure.Identity;
-using Azure.Storage.Blobs;
+using Azure.ResourceManager;
 
 namespace AzureCliCredentialExample
 {
@@ -16,25 +16,21 @@ namespace AzureCliCredentialExample
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            // while (!stoppingToken.IsCancellationRequested) // while is not needed when we create another layer of docker image with user credentials
+            bool connected = false;
+            while (!stoppingToken.IsCancellationRequested && !connected)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 try
                 {
-                    Uri blobContainerUri = _configuration.GetValue<Uri>("blobContainerUri");
-                    _logger.LogCritical($"Getting Files from {blobContainerUri}");
-
                     var creds = new DefaultAzureCredential(includeInteractiveCredentials: false);
 
-                    BlobContainerClient containerClient = new BlobContainerClient(blobContainerUri, creds);
-                    var blobs = containerClient.GetBlobsAsync(Azure.Storage.Blobs.Models.BlobTraits.None);
-                    int ind = 1;
-                    await foreach (var blob in blobs)
-                    {
-                        _logger.LogCritical($"{ind++} : {blob.Name}");
-                    }
+                    ArmClient client = new ArmClient(new DefaultAzureCredential());
+                    var subscriptionResource = await client.GetDefaultSubscriptionAsync();
+                    var subscription = await subscriptionResource.GetAsync();
+                    _logger.LogCritical($"Connected! Subscription displayname: {subscription.Value.Data.DisplayName}");
+                    connected = true;
                 }
-                catch (Exception ex)
+                catch (CredentialUnavailableException ex)
                 {
                     _logger.LogCritical(ex, "Error");
                     _logger.LogInformation("Waiting 10 seconds before retrying");
